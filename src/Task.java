@@ -23,7 +23,7 @@ public class Task implements Comparable<Task>, Serializable {
         this.isCompleted = false;
     }
 
-    // SC3: Algorithmic composite priority score calculation
+    // Algorithmic composite priority score calculation
     public double calculateCompositePriority() {
         long daysRemaining = ChronoUnit.DAYS.between(LocalDate.now(), dueDate);
         if (daysRemaining <= 0) daysRemaining = 1; // Prevent division by zero

@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class WorkloadManager {
     private List<Task> tasks;
-    public static final int DAILY_MAX_MINUTES = 180; // SC4: Daily threshold
+    public static final int DAILY_MAX_MINUTES = 180; // Daily threshold
 
     public WorkloadManager() {
         this.tasks = new ArrayList<>();
@@ -17,6 +17,10 @@ public class WorkloadManager {
 
     public void addTask(Task task) {
         tasks.add(task);
+    }
+
+    public void removeTask(Task task) {
+        tasks.remove(task);
     }
 
     public List<Task> getAllTasks() {
@@ -27,27 +31,20 @@ public class WorkloadManager {
         this.tasks = tasks;
     }
 
-    // SC3: Return active tasks sorted by dynamic composite priority
-    public List<Task> getPrioritizedActiveTasks() {
-        List<Task> activeTasks = tasks.stream()
-                .filter(t -> !t.isCompleted())
-                .collect(Collectors.toList());
-        Collections.sort(activeTasks);
-        return activeTasks;
-    }
-
-    // SC7: Filter active tasks by selected course name
+    // Filter tasks by course name and keep them sorted by composite priority score
     public List<Task> getFilteredTasks(String courseName) {
-        List<Task> active = getPrioritizedActiveTasks();
+        List<Task> all = new ArrayList<>(tasks);
+        Collections.sort(all);
+
         if (courseName.equals("All Courses")) {
-            return active;
+            return all;
         }
-        return active.stream()
+        return all.stream()
                 .filter(t -> t.getCourseName().equalsIgnoreCase(courseName))
                 .collect(Collectors.toList());
     }
 
-    // SC4 & SC5: Check total scheduled time for a date
+    // Check total scheduled time for a date (only uncompleted tasks count towards workload)
     public int getScheduledMinutesForDate(LocalDate date) {
         return tasks.stream()
                 .filter(t -> !t.isCompleted() && t.getDueDate().equals(date))
@@ -59,7 +56,7 @@ public class WorkloadManager {
         return getScheduledMinutesForDate(date) > DAILY_MAX_MINUTES;
     }
 
-    // SC8: Calculate completion percentage for progress bar
+    // Calculate completion percentage for progress bar
     public int getCourseCompletionPercentage(String courseName) {
         List<Task> courseTasks = tasks.stream()
                 .filter(t -> t.getCourseName().equalsIgnoreCase(courseName))

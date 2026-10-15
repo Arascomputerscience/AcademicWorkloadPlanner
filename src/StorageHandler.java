@@ -8,7 +8,7 @@ import java.util.List;
 public class StorageHandler {
     private static final String FILE_PATH = "tasks.dat";
 
-    // SC6: Save tasks locally
+    // Save tasks locally
     public static void saveTasks(List<Task> tasks) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FILE_PATH))) {
             oos.writeObject(tasks);
@@ -17,7 +17,7 @@ public class StorageHandler {
         }
     }
 
-    // SC6: Load tasks locally on application launch
+    // Load tasks locally on application launch
     @SuppressWarnings("unchecked")
     public static List<Task> loadTasks() {
         File file = new File(FILE_PATH);
