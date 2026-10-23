@@ -1,9 +1,3 @@
-package gui;
-
-import model.Task;
-import util.StorageHandler;
-import util.WorkloadManager;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -240,7 +234,7 @@ public class Main extends JFrame {
         DefaultTableCellRenderer overdueRenderer = new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value,
-                    boolean isSelected, boolean hasFocus, int row, int column) {
+                                                           boolean isSelected, boolean hasFocus, int row, int column) {
                 
                 Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
@@ -294,6 +288,10 @@ public class Main extends JFrame {
                 if (row < currentTasks.size()) {
                     Task task = currentTasks.get(row);
                     task.setCompleted(isChecked != null && isChecked);
+                    
+                    // Instant auto-save when checking/unchecking
+                    StorageHandler.saveTasks(manager.getAllTasks());
+                    
                     SwingUtilities.invokeLater(this::refreshTaskList);
                 }
             }
@@ -383,6 +381,9 @@ public class Main extends JFrame {
         Task newTask = new Task(title, course, dueDate, priority, effort);
         manager.addTask(newTask);
 
+        // Instant auto-save when adding a task
+        StorageHandler.saveTasks(manager.getAllTasks());
+
         updateCourseDropdown(course);
         clearForm();
         refreshTaskList();
@@ -416,6 +417,10 @@ public class Main extends JFrame {
             if (selectedRow < displayedTasks.size()) {
                 Task taskToRemove = displayedTasks.get(selectedRow);
                 manager.removeTask(taskToRemove);
+
+                // Instant auto-save when deleting a task
+                StorageHandler.saveTasks(manager.getAllTasks());
+
                 refreshTaskList();
             }
         }
@@ -571,8 +576,8 @@ public class Main extends JFrame {
             monthTitleLabel.setText(currentYearMonth.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " " + currentYearMonth.getYear());
 
             LocalDate firstOfMonth = currentYearMonth.atDay(1);
-            int dayOfWeekValue = firstOfMonth.getDayOfWeek().getValue(); 
-            int blankCells = dayOfWeekValue % 7; 
+            int dayOfWeekValue = firstOfMonth.getDayOfWeek().getValue();
+            int blankCells = dayOfWeekValue % 7;
 
             for (int i = 0; i < blankCells; i++) {
                 JPanel emptyCell = new JPanel();
